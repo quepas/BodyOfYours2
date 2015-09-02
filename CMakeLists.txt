@@ -10,6 +10,8 @@ set(BOOST_LIB "D:/Programowanie/Biblioteki/boost_1.50_msvc2010_x86/lib")
 set(EIGEN_INC "D:/Programowanie/Biblioteki/Tidy/Eigen/include")
 set(REME_INC "D:/Programy/RecounstructMe SDK/inc")
 set(REME_LIB "D:/Programy/RecounstructMe SDK/lib")
+set(RECFUSION_INC "D:/Programy/RecFusion SDK/include")
+set(RECFUSION_LIB "D:/Programy/RecFusion SDK/lib")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -21,8 +23,8 @@ find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 link_directories(${VTK_LIBRARY_DIRS})
 
-include_directories(${BOOST_INC} ${PCL_INC} ${EIGEN_INC} ${REME_INC})
-link_directories(${BOOST_LIB} ${PCL_LIB} ${REME_LIB})
+include_directories(${BOOST_INC} ${PCL_INC} ${EIGEN_INC} ${REME_INC} ${RECFUSION_INC})
+link_directories(${BOOST_LIB} ${PCL_LIB} ${REME_LIB} ${RECFUSION_LIB})
 
 find_package(Qt4 4.8.0 REQUIRED QtGui QtCore)
 
@@ -31,4 +33,4 @@ file (GLOB RAW_headers src/*.h src/data/*.h)
 #file (GLOB RAW_gui gui/*.ui)
 
 add_executable(BodyOfYoursApp ${RAW_sources} ${RAW_headers})
-target_link_libraries(BodyOfYoursApp Qt4::QtCore Qt4::QtGui QVTK pcl_visualization_debug pcl_common_debug pcl_io_debug LibReconstructMeSDK)
+target_link_libraries(BodyOfYoursApp Qt4::QtCore Qt4::QtGui QVTK pcl_visualization_debug pcl_common_debug pcl_io_debug LibReconstructMeSDK RecFusion)

@@ -12,6 +12,8 @@
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/PolygonMesh.h>
 
+using namespace RecFusion;
+
 using pcl::PointCloud;
 using pcl::PointXYZ;
 using pcl::io::loadPLYFile;
@@ -41,7 +43,40 @@ MainWindow::MainWindow(QWidget *parent, bool use_reme)
   }
   // RecFusion
   else {
+    std::cout << "Using RecFusionSDK " << RecFusionSDK::majorVersion() << "." << RecFusionSDK::minorVersion() << std::endl;
 
+    // Instantiate sensor objects
+    m_sensor[0] = new Sensor();
+    m_sensor[1] = new Sensor();
+    m_sensor[2] = new Sensor();
+
+    num_sensor_ = m_sensor[0]->deviceCount();
+    QMessageBox::information(this, "Sensors connected", QString("Number of sensors connected: ") + QString::number(num_sensor_));
+
+    for (unsigned i = 0; i < num_sensor_; ++i) {
+      ok = m_sensor[i]->open(i);
+      if (!ok)
+      {
+        QMessageBox::warning(this, "Initialization", "Couldn't open sensor num. " + QString::number(i) + ". Exiting.");
+        QTimer::singleShot(0, this, SLOT(close()));
+      }
+      else
+      {
+        // Get sensor properties
+        sensor_data_ = new SensorData(*m_sensor[i]);
+        sensors_data_.push_back(sensor_data_);
+        int w = m_sensor[i]->width();
+        int h = m_sensor[i]->height();
+        m_imgLabel[i]->resize(w, h);
+      }
+    }
+
+    // Create message box for calibration dialog
+    m_calibMessageBox = new QMessageBox(this);
+    m_calibMessageBox->setIcon(QMessageBox::Information);
+    m_calibMessageBox->setWindowTitle("Calibration");
+    m_calibMessageBox->setText("Press OK to capture calibration frame");
+    m_calibMessageBox->setDefaultButton(QMessageBox::Ok);
   }
   connect(add_patient_dialog_, SIGNAL(CreatePatientSignal(Patient)), this, SLOT(CreatePatientSlot(Patient)));
   ui->addPatientButton->setIcon(QIcon(Resources::ICON_ADD));
@@ -64,6 +99,17 @@ MainWindow::MainWindow(QWidget *parent, bool use_reme)
 
 MainWindow::~MainWindow()
 {
+  // Close and delete sensors
+  for (unsigned i = 0; i < num_sensor_; ++i) {
+    m_sensor[i]->close();
+    delete m_sensor[i];
+  }
+
+  // Delete all allocated data
+  delete m_timer;
+  delete m_rec;
+  delete sensor_data_;
+
   delete ui;
 }
 

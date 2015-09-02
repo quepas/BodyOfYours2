@@ -1,4 +1,4 @@
-#include "SensorData.h"
+#include "sensor_data.h"
 #include "RecFusionUtils.h"
 
 using RecFusion::ColorImage;
