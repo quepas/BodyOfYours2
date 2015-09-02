@@ -20,10 +20,10 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit MainWindow(QWidget *parent = 0);
+  explicit MainWindow(QWidget *parent = 0, bool use_reme = false);
   ~MainWindow();
 
-private slots:
+private slots:  
   void on_computingDevicesComboBox_currentIndexChanged(int index);
   void on_addPatientButton_clicked();
   void on_removePatientButton_clicked();
@@ -38,6 +38,7 @@ private:
   PatientInfoDialog *add_patient_dialog_;
   ScansDataTree* scans_data_tree_;
   Scanner3D* scanner3d_;
+  bool use_reme_;
 
 };
 
